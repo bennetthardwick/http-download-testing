@@ -1,9 +1,10 @@
 build:
-	go build go/main.go
+	(cd go && go build main.go)
+	(cd go_proxy && go build main.go)
 	cargo build --release
 
 bench_go:
-	./main | pv -a > /dev/null
+	./go/main | pv -a > /dev/null
 
 bench_reqwest:
 	./target/release/reqwest_bench | pv -a > /dev/null

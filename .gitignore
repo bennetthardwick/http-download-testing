@@ -1,2 +1,3 @@
-main
+/go/main
+/go_proxy/main
 target/

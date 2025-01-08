@@ -38,6 +38,9 @@ impl TokioAsyncRead for AsyncBodyShim {
 
 #[tokio::main]
 async fn main() {
+    let stdout = std::io::stdout();
+    let mut guard = stdout.lock();
+
     let client = isahc::HttpClientBuilder::new()
         .tcp_nodelay()
         .version_negotiation(VersionNegotiation::http11())
@@ -48,10 +51,17 @@ async fn main() {
 
     eprintln!("Fetching {url} with Isahc");
 
-    let response = client.get_async(url).await.expect("failed to send request");
+    let mut request = isahc::Request::get(url);
 
-    let stdout = std::io::stdout();
-    let mut guard = stdout.lock();
+    if let Ok(auth) = std::env::var("TEST_AUTH") {
+        eprintln!("Using TEST_AUTH header");
+        request = request.header("authorization", format!("Bearer {auth}"));
+    }
+
+    let response = client
+        .send_async(request.body(()).expect("failed to build request"))
+        .await
+        .expect("failed to send request");
 
     let body = response.into_body();
 
