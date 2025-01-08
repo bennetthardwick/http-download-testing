@@ -14,11 +14,14 @@ async fn main() {
 
     eprintln!("Fetching {url} with Reqwest");
 
-    let response = client
-        .get(url)
-        .send()
-        .await
-        .expect("failed to send request");
+    let mut request = client.get(url);
+
+    if let Ok(auth) = std::env::var("TEST_AUTH") {
+        eprintln!("Using TEST_AUTH header");
+        request = request.header("authorization", format!("Bearer {auth}"));
+    }
+
+    let response = request.send().await.expect("failed to send request");
 
     println!("{:?}", response.remote_addr());
 

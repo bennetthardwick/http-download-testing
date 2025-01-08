@@ -1,5 +1,8 @@
 use futures::AsyncReadExt;
-use isahc::config::{Configurable, VersionNegotiation};
+use isahc::{
+    config::{Configurable, VersionNegotiation},
+    Request,
+};
 use std::io::Write;
 
 #[tokio::main]
@@ -14,7 +17,17 @@ async fn main() {
 
     eprintln!("Fetching {url} with Isahc");
 
-    let response = client.get_async(url).await.expect("failed to send request");
+    let mut request = Request::get(url);
+
+    if let Ok(auth) = std::env::var("TEST_AUTH") {
+        eprintln!("Using TEST_AUTH header");
+        request = request.header("authorization", format!("Bearer {auth}"));
+    }
+
+    let response = client
+        .send_async(request.body(()).expect("failed to build request"))
+        .await
+        .expect("failed to send request");
 
     let mut body = response.into_body();
 

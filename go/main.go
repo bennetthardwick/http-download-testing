@@ -27,7 +27,21 @@ func main() {
 		},
 	}
 
-	res, err := client.Get(url)
+	req, err := http.NewRequest("GET", url, nil)
+
+	if err != nil {
+		l.Println("failed to create request")
+		os.Exit(1)
+	}
+
+	auth, ok := os.LookupEnv("TEST_AUTH")
+
+	if ok {
+		l.Println("Using TEST_AUTH header")
+		req.Header.Add("Authorization", "Bearer "+auth)
+	}
+
+	res, err := client.Do(req)
 
 	if err != nil {
 		l.Println("Request returned error")
