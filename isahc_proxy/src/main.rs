@@ -60,9 +60,9 @@ async fn handler() -> impl IntoResponse {
         .await
         .expect("failed to send request");
 
-    let mut body = response.into_body();
+    let body = response.into_body();
 
-    Body::from_stream(ReaderStream::new(AsyncBodyShim(response.into_body())))
+    Body::from_stream(ReaderStream::new(AsyncBodyShim(body)))
 }
 
 #[tokio::main]
