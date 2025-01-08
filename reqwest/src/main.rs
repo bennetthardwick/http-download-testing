@@ -1,10 +1,12 @@
+use std::io::Write;
+
 use futures::StreamExt;
-use tokio::io::AsyncWriteExt;
 
 #[tokio::main]
 async fn main() {
     let client = reqwest::ClientBuilder::new()
         .http1_only()
+        .tcp_nodelay(true)
         .build()
         .expect("failed to build client");
 
@@ -18,14 +20,15 @@ async fn main() {
         .await
         .expect("failed to send request");
 
+    println!("{:?}", response.remote_addr());
+
     let mut stream = response.bytes_stream();
-    let mut stdout = tokio::io::stdout();
+
+    let stdout = std::io::stdout();
+    let mut guard = stdout.lock();
 
     while let Some(next) = stream.next().await {
         let bytes = next.expect("stream returned error");
-        stdout
-            .write_all(&bytes)
-            .await
-            .expect("failed to write to stdout");
+        guard.write_all(&bytes).expect("failed to write to stdout");
     }
 }
