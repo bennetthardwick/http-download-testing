@@ -18,6 +18,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	l.Printf("Fetching %s with Go http", url)
+
 	client := http.Client{
 		Transport: &http.Transport{
 			// disable http2

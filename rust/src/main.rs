@@ -10,6 +10,8 @@ async fn main() {
 
     let url = std::env::var("TEST_URL").expect("failed to get TEST_URL environment variable");
 
+    eprintln!("Fetching {url} with Reqwest");
+
     let response = client
         .get(url)
         .send()
