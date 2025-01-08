@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
 	"isahc",
+	"isahc_proxy",
 	"isahc_stream_reader",
 	"reqwest",
 	"server",
