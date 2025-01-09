@@ -19,7 +19,7 @@ bench_ureq:
 	./target/release/ureq_bench | pv -a > /dev/null
 
 bench_curl:
-	curl -s --http1.1 ${TEST_URL} | pv -a > /dev/null
+	curl -s --http1.1 '${TEST_URL}' | pv -a > /dev/null
 
 bench:
 	$(MAKE) bench_curl
