@@ -1,39 +1,10 @@
-use std::pin::Pin;
-use std::task::{Context, Poll};
-
 use axum::{body::Body, response::IntoResponse, routing::get, Router};
-use futures::AsyncRead;
 use isahc::config::{Configurable, VersionNegotiation};
-use isahc::{AsyncBody, Request};
+use isahc::Request;
 use lazy_static::lazy_static;
-use pin_project::pin_project;
-use tokio::io::{AsyncRead as TokioAsyncRead, ReadBuf};
 use tokio::net::TcpListener;
+use tokio_util::compat::FuturesAsyncReadCompatExt;
 use tokio_util::io::ReaderStream;
-
-#[pin_project]
-struct AsyncBodyShim(#[pin] AsyncBody);
-
-impl TokioAsyncRead for AsyncBodyShim {
-    fn poll_read(
-        self: Pin<&mut Self>,
-        cx: &mut Context<'_>,
-        buf: &mut ReadBuf<'_>,
-    ) -> Poll<std::io::Result<()>> {
-        let me = self.project();
-
-        let bytes = buf.initialize_unfilled();
-
-        match me.0.poll_read(cx, bytes) {
-            Poll::Pending => Poll::Pending,
-            Poll::Ready(Ok(amt)) => {
-                buf.advance(amt);
-                Poll::Ready(Ok(()))
-            }
-            Poll::Ready(Err(e)) => Poll::Ready(Err(e)),
-        }
-    }
-}
 
 lazy_static! {
     static ref CLIENT: isahc::HttpClient = isahc::HttpClientBuilder::new()
@@ -62,7 +33,7 @@ async fn handler() -> impl IntoResponse {
 
     let body = response.into_body();
 
-    Body::from_stream(ReaderStream::new(AsyncBodyShim(body)))
+    Body::from_stream(ReaderStream::new(body.compat()))
 }
 
 #[tokio::main]
