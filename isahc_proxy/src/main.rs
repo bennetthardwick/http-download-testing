@@ -38,7 +38,7 @@ async fn handler() -> impl IntoResponse {
 
 #[tokio::main]
 async fn main() {
-    let listener = TcpListener::bind("localhost:2000")
+    let listener = TcpListener::bind("0.0.0.0:2000")
         .await
         .expect("failed to bind to localhost:2000");
 
