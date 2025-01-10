@@ -1,13 +1,9 @@
-use std::io::Write;
-
-use futures::AsyncReadExt;
 use isahc::{
     config::{Configurable, VersionNegotiation},
     Request,
 };
 
-#[tokio::main]
-async fn main() {
+fn main() {
     let stdout = std::io::stdout();
     let mut guard = stdout.lock();
 
@@ -29,24 +25,10 @@ async fn main() {
     }
 
     let response = client
-        .send_async(request.body(()).expect("failed to build request"))
-        .await
+        .send(request.body(()).expect("failed to build request"))
         .expect("failed to send request");
 
     let mut body = response.into_body();
 
-    // same size buf as tokio reader stream
-    let mut buf = vec![0; 4096];
-
-    loop {
-        let amt = body.read(&mut buf).await.expect("failed to read bytes");
-
-        if amt == 0 {
-            break;
-        }
-
-        guard
-            .write_all(&buf[0..amt])
-            .expect("failed to write to stdout");
-    }
+    std::io::copy(&mut body, &mut guard).expect("failed to copy to stdout");
 }

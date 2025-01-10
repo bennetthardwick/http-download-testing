@@ -1,0 +1,26 @@
+FROM alpine:3.21 AS builder
+WORKDIR /app
+
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH
+
+RUN apk add go openssl-dev openssl-libs-static curl make perl
+
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+COPY . .
+
+RUN make
+
+RUN rm ./target/release/deps/ -rf
+RUN rm ./target/release/build/ -rf
+
+FROM alpine:3.21
+WORKDIR /app
+
+RUN apk add curl make pv bash
+
+COPY --from=builder /app .
+
+CMD ["/bin/bash"]

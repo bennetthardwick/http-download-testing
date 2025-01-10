@@ -10,6 +10,7 @@ async fn main() {
     let client = reqwest::ClientBuilder::new()
         .http1_only()
         .tcp_nodelay(true)
+        .use_rustls_tls()
         .build()
         .expect("failed to build client");
 

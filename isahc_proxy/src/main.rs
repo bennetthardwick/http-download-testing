@@ -40,12 +40,9 @@ async fn handler() -> impl IntoResponse {
 async fn main() {
     let listener = TcpListener::bind("0.0.0.0:2000")
         .await
-        .expect("failed to bind to localhost:2000");
+        .expect("failed to bind to :2000");
 
-    println!(
-        "Starting Rust server on localhost:2000 to server {}",
-        URL.as_str()
-    );
+    println!("Starting Rust server on :2000 to server {}", URL.as_str());
 
     axum::serve(listener, Router::new().route("/", get(handler)))
         .await

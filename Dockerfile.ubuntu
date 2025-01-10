@@ -1,0 +1,26 @@
+FROM ubuntu:24.04 AS builder
+WORKDIR /app
+
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH
+
+RUN apt-get update && apt-get install -y build-essential curl golang make openssl libssl-dev
+
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+
+COPY . .
+
+RUN make
+
+RUN rm ./target/release/deps/ -rf
+RUN rm ./target/release/build/ -rf
+
+FROM ubuntu:24.04
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y openssl pv make ca-certificates curl
+
+COPY --from=builder /app .
+
+CMD ["/bin/bash"]

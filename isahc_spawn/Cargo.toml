@@ -1,5 +1,5 @@
 [package]
-name = "isahc_stream_reader_bench"
+name = "isahc_spawn_bench"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,5 +7,4 @@ edition = "2021"
 futures = "0.3.31"
 isahc = "1.7.2"
 tokio = { version = "1.42.0", features = [ "rt-multi-thread", "macros" ] }
-pin-project = "1.1.8"
-tokio-util = { version = "0.7.13", features = [ "io", "compat" ] }
+tokio-util = { version = "0.7.13", features = [ "compat" ] }

@@ -18,9 +18,11 @@ async fn handler() -> impl IntoResponse {
 
 #[tokio::main]
 async fn main() {
-    let listener = TcpListener::bind("localhost:1234")
+    let listener = TcpListener::bind("0.0.0.0:1234")
         .await
-        .expect("failed to bind to localhost:1234");
+        .expect("failed to bind to :1234");
+
+    eprintln!("Server running on :1234");
 
     axum::serve(listener, Router::new().route("/", get(handler)))
         .await

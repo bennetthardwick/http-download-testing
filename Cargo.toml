@@ -2,9 +2,13 @@
 resolver = "2"
 members = [
 	"isahc",
+	"isahc_spawn",
 	"isahc_proxy",
+	"isahc_blocking",
 	"isahc_stream_reader",
 	"reqwest",
+	"reqwest_spawn",
+	"reqwest_rustls",
 	"server",
 	"ureq",
 ]

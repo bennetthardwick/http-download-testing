@@ -5,5 +5,5 @@ edition = "2021"
 
 [dependencies]
 futures = "0.3.31"
-reqwest = { version = "0.12.12", features = [ "stream" ] }
-tokio = { version = "1.42.0", features = [ "rt-multi-thread", "macros", "io-std" ] }
+reqwest = { version = "0.12.12", features = [ "stream", "native-tls-alpn" ] }
+tokio = { version = "1.42.0", features = [ "rt-multi-thread", "macros" ] }
