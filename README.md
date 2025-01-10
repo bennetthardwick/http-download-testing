@@ -19,7 +19,7 @@ I've been testing this code on Google Cloud Platform. All libraries have similar
 
 ### GCP g1-small, GCS object same region, https
 
-| Lang             | Speed    |
+| Lib              | Speed    |
 | ---------------- | -------- |
 | Go               | 230MiB/s |
 | Reqwest          | 210MiB/s |
@@ -28,9 +28,11 @@ I've been testing this code on Google Cloud Platform. All libraries have similar
 | Ureq             | 250MiB/s |
 | Curl             | 260MiB/s |
 
+Run as a docker container.
+
 ### GCP GKE Autopilot Pod, n1 machine class, GCS object same region, https
 
-| Lang             | Speed    |
+| Lib              | Speed    |
 | ---------------- | -------- |
 | Go               | 240MiB/s |
 | Reqwest          | 104MiB/s |
@@ -38,3 +40,28 @@ I've been testing this code on Google Cloud Platform. All libraries have similar
 | Isahc            | 140MiB/s |
 | Ureq             | 230MiB/s |
 | Curl             | 220MiB/s |
+
+Kubernetes pod spec:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: http-request-testing
+  labels:
+    app: http-request-testing
+spec:
+  nodeSelector:
+    cloud.google.com/machine-family: n1
+  containers:
+  - name: http-request-testing
+    image: docker.io/bennetthardwick/http-request-testing:ubuntu-24.04@sha256:9e36ff4d74925e2da1e0258007683b0281bb22f31c7e930dfac3e79b4b8e2f63
+    stdin: true 
+    tty: true 
+    imagePullPolicy: Always
+    resources:
+      requests:
+        cpu: 1
+      limits:
+        cpu: 1
+```
